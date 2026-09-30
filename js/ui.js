@@ -58,6 +58,7 @@ function renderSettings(){
   <label>${T('music')}<input type="range" min="0" max="1" step=".05" value="${t.music}" data-k="music"></label>
   <label>${T('sfx')}<input type="range" min="0" max="1" step=".05" value="${t.sfx}" data-k="sfx"></label>
   <label>${T('offset')}<span><button data-o="-10">−</button> <b id="ov">${t.offsetMs}</b> <button data-o="10">+</button></span></label>
+  <label>${T('calib')}<button id="cal">▶</button></label>
   <label>${T('reduce')}<input type="checkbox" data-c="reduce" ${t.reduce?'checked':''}></label>
   <label>${T('vib')}<input type="checkbox" data-c="vibrate" ${t.vibrate?'checked':''}></label>
   <label>${T('lang')}<span><button data-l="fr">FR</button> <button data-l="en">EN</button></span></label>
@@ -68,6 +69,7 @@ function renderSettings(){
  el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{lang=b.dataset.l;S.core.language=lang;Store.save();renderSettings()});
  document.getElementById('rs').onclick=()=>{if(confirm(T('resetq'))){try{localStorage.removeItem(CFG.storeKey)}catch(e){}S=Store.defaults();lang=S.core.language;renderSettings()}};
  document.getElementById('bk').onclick=()=>{renderHome();show('home')};
+ document.getElementById('cal').onclick=renderCalib;
 }
 /* pause auto si l'app perd le focus */
 document.addEventListener('visibilitychange',()=>{
@@ -79,3 +81,23 @@ document.addEventListener('visibilitychange',()=>{
 });
 /* API de module pour le futur hub JIEE PLAY */
 window.JIEEBEAT={getGameProgress:()=>S.jieebeat.songs,getStatistics:()=>S.jieebeat.stats,getProfileData:()=>S.core,getAchievements:()=>S.core.achievements};
+
+/* ===== CALIBRATION : 14 pulsations, on mesure l'écart médian entre chaque toucher et la pulsation la plus proche ===== */
+function renderCalib(){
+ const el=document.getElementById('settings');
+ el.innerHTML=`<h2>${T('calib')}</h2><div class="sub">${T('calibmsg')}</div><p class="big" id="cn">0/8</p><div class="sp"></div>
+  <button class="p" id="ct" style="min-height:150px;font-size:24px">TAP</button><div style="height:10px"></div><button id="cb">${T('back')}</button>`;
+ const C=window.AudioContext||window.webkitAudioContext;if(!C){renderSettings();return}
+ const ctx=new C({latencyHint:'interactive'}),t0=ctx.currentTime+.6,iv=.6,beats=[],ds=[];let done=false;
+ for(let i=0;i<14;i++){const t=t0+i*iv,o=ctx.createOscillator(),gn=ctx.createGain();o.frequency.value=880;
+  gn.gain.setValueAtTime(.5,t);gn.gain.exponentialRampToValueAtTime(.001,t+.08);o.connect(gn);gn.connect(ctx.destination);o.start(t);o.stop(t+.1);beats.push(t)}
+ const close=()=>{try{ctx.close()}catch(e){}};
+ document.getElementById('ct').onpointerdown=()=>{
+  if(done)return;const p=ctx.currentTime,b=Math.round((p-t0)/iv);if(b<2||b>13)return;/* 2 premières pulsations = échauffement */
+  ds.push(p-beats[b]);document.getElementById('cn').textContent=ds.length+'/8';
+  if(ds.length>=8){done=true;ds.sort((x,y)=>x-y);const off=Math.max(-300,Math.min(300,Math.round((ds[3]+ds[4])/2*1000)));
+   S.tech.offsetMs=off;Store.save();close();
+   document.getElementById('cn').textContent=T('calibres',{n:off});
+   const ct=document.getElementById('ct');ct.textContent=T('again');ct.onpointerdown=null;ct.onclick=renderCalib}};
+ document.getElementById('cb').onclick=()=>{done=true;close();renderSettings()};
+}
