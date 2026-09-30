@@ -1,0 +1,39 @@
+{
+ "id": "song-001",
+ "version": 1,
+ "title": "Awakening Pulse",
+ "artist": "JIEE",
+ "category": "JIEE ORIGINAL",
+ "chapter": "CHAPITRE 01",
+ "difficulty": 1,
+ "bpm": 84,
+ "audio": null,
+ "cover": null,
+ "requires": null,
+ "rewards": {
+  "coins": 5
+ },
+ "color": "#22e6c7",
+ "description": "Le premier battement.",
+ "tags": [
+  "original"
+ ],
+ "sections": [
+  [
+   "INTRO",
+   0
+  ],
+  [
+   "VERSE",
+   4
+  ],
+  [
+   "CHORUS",
+   8
+  ],
+  [
+   "FINAL",
+   12
+  ]
+ ]
+}

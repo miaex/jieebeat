@@ -1,0 +1,39 @@
+{
+ "id": "song-002",
+ "version": 1,
+ "title": "Rush Protocol",
+ "artist": "JIEE",
+ "category": "JIEE ORIGINAL",
+ "chapter": "CHAPITRE 02",
+ "difficulty": 2,
+ "bpm": 100,
+ "audio": null,
+ "cover": null,
+ "requires": "song-001",
+ "rewards": {
+  "coins": 5
+ },
+ "color": "#ff4fa3",
+ "description": "Le rythme s'accélère.",
+ "tags": [
+  "original"
+ ],
+ "sections": [
+  [
+   "INTRO",
+   0
+  ],
+  [
+   "VERSE",
+   4
+  ],
+  [
+   "CHORUS",
+   8
+  ],
+  [
+   "FINAL",
+   12
+  ]
+ ]
+}
