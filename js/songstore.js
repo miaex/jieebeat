@@ -84,8 +84,23 @@ class SongStore {
     if (navigator.connection && navigator.connection.saveData) return; // respecte le mode économie de données
     const s = this.byId.get(id); if (!s) return;
     this.chart(id).catch(() => {});
-    this._fetchBytes(this.base + s.audio).catch(() => {});
+    if (s.head) this._fetchBytes(this.base + s.head).catch(() => {});
+    this.warm(this.base + s.audio);
   }
+
+  // Tête du morceau (45 s) : petit fichier, décodé en une fraction de seconde -> démarrage rapide.
+  decodedHead(id) {
+    const k = 'h:' + id;
+    if (!this._decoded.has(k)) {
+      const url = this.base + this.byId.get(id).head;
+      const p = this._fetchBytes(url).then(b => this.ctx.decodeAudioData(b.slice(0))).finally(() => this._bytes.delete(url));
+      this._decoded.set(k, p); p.catch(() => this._decoded.delete(k));
+    }
+    return this._decoded.get(k);
+  }
+  dropHead(id) { this._decoded.delete('h:' + id); }
+  // Libère la RAM : ne garde que le morceau courant.
+  trim(keepId) { for (const k of [...this._decoded.keys()]) if (k !== keepId && k !== 'h:' + keepId) this._decoded.delete(k); }
 
   async load(id) {
     const [chart, buffer] = await Promise.all([this.chart(id), this.decoded(id)]);
@@ -127,15 +142,16 @@ class SongStore {
     try { const c = await caches.open(CACHE_NAME); if (await c.match(url)) return; const r = await fetch(url); if (r.ok) await c.put(url, r); } catch (_) {}
   }
   // Préchargement discret (covers/previews sont déjà précachés par le service worker) : audio des morceaux demandés.
-  prefetchIdle(audioIds = []) {
+  prefetchIdle(audioIds = [], headIds = []) {
     if (navigator.connection && navigator.connection.saveData) return;
-    const q = audioIds.map(id => this.byId.get(id)).filter(Boolean).map(s => this.base + s.audio);
+    const hs = headIds.map(id => this.byId.get(id)).filter(s => s && s.head).map(s => this.base + s.head);
+    const q = hs.concat(audioIds.map(id => this.byId.get(id)).filter(Boolean).map(s => this.base + s.audio));
     const step = () => { const u = q.shift(); if (!u) return; this.warm(u).finally(() => (window.requestIdleCallback || setTimeout)(step, 200)); };
     (window.requestIdleCallback || setTimeout)(step, 2500);
   }
   async downloadAll(cb) {
     let n = 0; const all = this.manifest.songs;
-    for (const s of all) { await this.warm(this.base + s.audio); if (cb) cb(++n, all.length); }
+    for (const s of all) { if (s.head) await this.warm(this.base + s.head); await this.warm(this.base + s.audio); if (cb) cb(++n, all.length); }
   }
 
   async cachedSize() {

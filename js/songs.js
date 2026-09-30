@@ -29,8 +29,17 @@ function toChart(raw,song){
   if(!secs.length||secs[secs.length-1][0]!==nm)secs.push([nm,i===0?0:+(ab+i*w).toFixed(2)])});
  return{version:1,bpm,eighth:30/bpm,length:+(ab+dur).toFixed(3),audioStart:ab,beatOffset:(raw.firstBeatMs||0)/1000,energy,energyStep:step,sections:secs,notes};
 }
+/* Démarrage progressif : on ne décode que la tête (45 s) avant de jouer ; le fichier complet se décode pendant la partie
+   et prend le relais par un fondu à 35 s (Aud.handover). Sans tête (morceau court) : comportement classique. */
 async function prepareSong(song){
  Aud.ensure();store.setAudioContext(Aud.ctx);
- const {chart,buffer}=await store.load(song.id);
- song.chart=toChart(chart,song);song._buf=buffer;
+ SONGS.forEach(x=>{if(x!==song){x._buf=null;x._head=null}});store.trim(song.id);
+ song._buf=null;song._head=null;
+ const full=store.decoded(song.id);
+ full.then(b=>{song._buf=b;if(E.run&&E.run.song===song){Aud.handover(song);if(E.run.state==='buffering'){E.run.state='play';Aud.ctx.resume()}}}).catch(()=>{});
+ const hp=song.head?store.decodedHead(song.id).catch(()=>null):Promise.resolve(null);
+ const [raw,head]=await Promise.all([store.chart(song.id),hp]);
+ song.chart=toChart(raw,song);
+ if(head){song._head=head;song.headSec=head.duration;song.handoverAt=Math.max(10,head.duration-10)}
+ else song._buf=await full;
 }

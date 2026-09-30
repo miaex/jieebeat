@@ -18,7 +18,7 @@ function toast(msg,fn){const t=document.getElementById('toast');t.textContent=ms
 function openSong(id,play){
  const s=SONGS.find(x=>x.id===id);if(!s||!chapterOpen(s.level)){toast(T('oops'));return}
  SEL=id;push('song');
- Aud.ensure();store.setAudioContext(Aud.ctx);store.hover(id);store.decoded(id).catch(()=>{});/* décodage anticipé : lancement quasi instantané */
+ Aud.ensure();store.setAudioContext(Aud.ctx);store.trim(id);store.hover(id);if(s.head)store.decodedHead(id).catch(()=>{});/* décodage anticipé : lancement quasi instantané */
  if(play){startSong(s);return}
  renderSong();store.playPreview(id,Math.min(1,S.tech.music*.9)).catch(()=>{});
 }

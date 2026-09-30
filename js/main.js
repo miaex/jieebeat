@@ -10,7 +10,7 @@ addEventListener('error',()=>{if(Date.now()-lastErr>5000){lastErr=Date.now();toa
 initNav();
 Promise.all([loadI18n(),loadSongs(),loadChallenges(),loadCollection(),loadAchievements()]).then(()=>{
  renderHome();show('home');
- store.prefetchIdle(SONGS.filter(s=>s.level===1).map(s=>s.id));/* audio du chapitre 1 en arrière-plan */
+ store.prefetchIdle(SONGS.slice(0,5).map(s=>s.id),SONGS.slice(0,12).map(s=>s.id));/* têtes des 12 premiers morceaux + audio des 5 premiers, en arrière-plan */
  if(!S.tech.seenHow){S.tech.seenHow=true;Store.save();push('how');renderHow()}/* premier lancement : Comment jouer */
 });
 /* Contrat avec le futur hub JIEE PLAY : le hub peut injecter le profil et être prévenu à chaque sauvegarde */
