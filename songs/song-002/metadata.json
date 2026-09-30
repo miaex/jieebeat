@@ -25,15 +25,17 @@
   ],
   [
    "VERSE",
-   4
+   11.6
   ],
   [
    "CHORUS",
-   8
+   21.2
   ],
   [
    "FINAL",
-   12
+   30.8
   ]
- ]
+ ],
+ "audioStart": 2.0,
+ "approachBeats": 2.8
 }

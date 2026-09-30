@@ -1,0 +1,50 @@
+{
+ "id": "pina-colada",
+ "version": 1,
+ "title": "Pina Colada",
+ "artist": "Tony X ft. Axel Merryl",
+ "category": "JIEE SESSIONS",
+ "chapter": "CHAPITRE 01",
+ "difficulty": 2,
+ "bpm": 86.0,
+ "audio": "audio.m4a",
+ "audioStart": 2.5,
+ "beatOffset": 0.036,
+ "approachBeats": 3.5,
+ "cover": null,
+ "requires": null,
+ "rewards": {
+  "coins": 10
+ },
+ "color": "#ffb347",
+ "description": "Premier morceau test.",
+ "tags": [
+  "session"
+ ],
+ "sections": [
+  [
+   "INTRO",
+   0
+  ],
+  [
+   "VERSE",
+   25.91
+  ],
+  [
+   "BREAK",
+   70.56
+  ],
+  [
+   "VERSE",
+   92.88
+  ],
+  [
+   "CHORUS",
+   115.21
+  ],
+  [
+   "FINAL",
+   159.86
+  ]
+ ]
+}

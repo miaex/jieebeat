@@ -38,11 +38,11 @@ function finish(r,ok){
 
 /* ===== UI ===== */
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
- cv.style.visibility=(id===null||id==='pause')?'visible':'hidden';bgRun(id!==null&&id!=='pause')}
+ cv.style.visibility=(id===null||id==='pause')?'visible':'hidden';bgRun(id!==null&&id!=='pause');updateNav()}
 function stars(n){return '★'.repeat(n)+'☆'.repeat(5-n)}
 function renderHome(){
  const el=document.getElementById('home');const sk=S.jieebeat.streak;
- let cards=SONGS.map(s=>{const un=S.jieebeat.unlocked.includes(s.id),rec=S.jieebeat.songs[s.id]||{best:0,stars:0,bestCombo:0};
+ let cards=SONGS.map(s=>{const un=!s.requires||S.jieebeat.unlocked.includes(s.id),rec=S.jieebeat.songs[s.id]||{best:0,stars:0,bestCombo:0};
   const req=SONGS.find(x=>x.id===s.requires);
   return `<div class="card ${un?'':'lock'}"><div class="cover" style="--c:${s.color}"><i></i><i></i><i></i><i></i></div><div class="sp"><b>${un?'':'🔒 '}${s.title}</b>
    <small>${s.chapter} · ${s.category} · ${T('diff')} ${s.difficulty}/5 · ${Math.floor(s.duration/60)}:${String(s.duration%60).padStart(2,'0')}</small>
@@ -71,7 +71,7 @@ function renderSettings(){
  el.querySelectorAll('input[type=range]').forEach(i=>i.oninput=()=>{S.tech[i.dataset.k]=+i.value;Store.save()});
  el.querySelectorAll('input[type=checkbox]').forEach(i=>i.onchange=()=>{S.tech[i.dataset.c]=i.checked;Store.save()});
  el.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{S.tech.offsetMs=Math.max(-300,Math.min(300,S.tech.offsetMs+ +b.dataset.o));document.getElementById('ov').textContent=S.tech.offsetMs;Store.save()});
- el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{lang=b.dataset.l;S.core.language=lang;Store.save();renderSettings()});
+ el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{lang=b.dataset.l;S.core.language=lang;Store.save();renderSettings();updateNav()});
  document.getElementById('rs').onclick=()=>{if(confirm(T('resetq'))){try{localStorage.removeItem(CFG.storeKey)}catch(e){}S=Store.defaults();lang=S.core.language;renderSettings()}};
  document.getElementById('bk').onclick=()=>history.back();
  document.getElementById('cal').onclick=()=>{push('calib');renderCalib()};

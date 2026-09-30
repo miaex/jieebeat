@@ -9,7 +9,11 @@ const Aud={ctx:null,T0:0,music:null,sfx:null,
  osc(type,f,t,d,vol,dest,f2){const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
   if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
   o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+.02)},
- schedule(song){/* musique générée (originale, libre de droits) : kick, hat, basse, arpège */
+ async load(song){/* décode le fichier audio une fois par chanson */
+  if(!song.audio||song._buf)return true;
+  try{const r=await fetch(`songs/${song.id}/${song.audio}`);song._buf=await this.ctx.decodeAudioData(await r.arrayBuffer());return true}catch(e){return false}},
+ schedule(song){
+  if(song._buf){this.T0=this.ctx.currentTime+.12;const s=this.ctx.createBufferSource();s.buffer=song._buf;s.connect(this.music);s.start(this.T0+(song.audioStart||0));return}/* musique générée (originale, libre de droits) : kick, hat, basse, arpège */
   const c=this.ctx,e=song.chart.eighth,end=song.chart.length,roots=[55,55,65.4,73.4];
   this.T0=c.currentTime+.12;
   for(let k=0;k*e*2<end;k++){const t=this.T0+k*e*2;const bar=Math.floor(k/4);

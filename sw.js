@@ -1,6 +1,6 @@
 /* Service Worker : cache-first. Incrémenter VERSION à chaque mise à jour pour renouveler le cache. */
-const VERSION='jieebeat-v4';
-const ASSETS=["./", "index.html", "manifest.webmanifest", "css/style.css", "js/config.js", "js/i18n.js", "js/store.js", "js/songs.js", "js/audio.js", "js/engine.js", "js/ui.js", "js/daily.js", "js/collection.js", "js/bg.js", "js/nav.js", "js/main.js", "data/challenges.json", "data/collection.json", "icons/icon-192.png", "icons/icon-512.png", "songs/index.json", "songs/song-001/metadata.json", "songs/song-001/chart.json", "songs/song-002/metadata.json", "songs/song-002/chart.json"];
+const VERSION='jieebeat-v5';
+const ASSETS=["./", "index.html", "manifest.webmanifest", "css/style.css", "js/config.js", "js/i18n.js", "js/store.js", "js/songs.js", "js/audio.js", "js/engine.js", "js/ui.js", "js/daily.js", "js/collection.js", "js/bg.js", "js/nav.js", "js/main.js", "data/challenges.json", "data/collection.json", "icons/icon-192.png", "icons/icon-512.png", "songs/index.json", "songs/pina-colada/metadata.json", "songs/pina-colada/chart.json", "songs/pina-colada/audio.m4a", "songs/song-001/metadata.json", "songs/song-001/chart.json", "songs/song-002/metadata.json", "songs/song-002/chart.json"];
 self.addEventListener('install',e=>e.waitUntil(caches.open(VERSION).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==VERSION).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
