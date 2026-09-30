@@ -28,5 +28,5 @@ function renderChallenges(){
   dc.items.map(it=>{const c=CHALLENGES.find(x=>x.id===it.id);if(!c)return '';
    return `<div class="card"><div><b>${c[lang]}</b><small>${it.done?'✓ ':''}${Math.min(it.progress,c.target)}/${c.target} · +${c.coins} ◆</small></div></div>`}).join('')+
   `<div class="sp"></div><button class="p" id="bk2">${T('back')}</button>`;
- show('sub');document.getElementById('bk2').onclick=()=>{renderHome();show('home')};
+ show('sub');document.getElementById('bk2').onclick=()=>history.back();
 }

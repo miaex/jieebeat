@@ -2,7 +2,7 @@
 /* ===== FIN DE RUN, SCORES, PROGRESSION ===== */
 function starsOf(acc,ok,perfectRun){if(!ok)return 0;let s=1;CFG.stars.forEach((th,i)=>{if(i>0&&acc>=th)s=i+1});if(s===5&&!perfectRun)s=4;return s}
 function finish(r,ok){
- r.state='done';cancelAnimationFrame(E.raf);Aud.stop();
+ if(E.run!==r)return;r.state='done';cancelAnimationFrame(E.raf);Aud.stop();
  const total=r.counts.PERFECT+r.counts.GREAT+r.counts.GOOD;const acc=r.judged?r.acc/(r.judged+(ok?0:0)):0;
  const stars=starsOf(acc,ok,r.counts.GOOD===0&&r.counts.GREAT<=r.judged*.05);
  const rec=S.jieebeat.songs[r.song.id]||{best:0,stars:0,bestCombo:0,plays:0,clears:0};
@@ -31,19 +31,20 @@ function finish(r,ok){
   ${newUnlock?`<div class="card" style="border-color:var(--b)"><b>${T('unlocked')}</b><span>${newUnlock.title}</span></div>`:''}
   <div class="sp"></div>
   <button class="p" id="rt">${T('retry')}</button><div style="height:10px"></div><button id="mn">${T('menu')}</button>`;
- show('result');
+ show('result');history.replaceState({s:'result'},'');CUR='result';
  document.getElementById('rt').onclick=()=>startSong(r.song);
- document.getElementById('mn').onclick=()=>{renderHome();show('home')};
+ document.getElementById('mn').onclick=()=>history.back();
 }
 
 /* ===== UI ===== */
-function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id))}
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
+ cv.style.visibility=(id===null||id==='pause')?'visible':'hidden';bgRun(id!==null&&id!=='pause')}
 function stars(n){return '★'.repeat(n)+'☆'.repeat(5-n)}
 function renderHome(){
  const el=document.getElementById('home');const sk=S.jieebeat.streak;
  let cards=SONGS.map(s=>{const un=S.jieebeat.unlocked.includes(s.id),rec=S.jieebeat.songs[s.id]||{best:0,stars:0,bestCombo:0};
   const req=SONGS.find(x=>x.id===s.requires);
-  return `<div class="card ${un?'':'lock'}"><div><b>${un?'':'🔒 '}${s.title}</b>
+  return `<div class="card ${un?'':'lock'}"><div class="cover" style="--c:${s.color}"><i></i><i></i><i></i><i></i></div><div class="sp"><b>${un?'':'🔒 '}${s.title}</b>
    <small>${s.chapter} · ${s.category} · ${T('diff')} ${s.difficulty}/5 · ${Math.floor(s.duration/60)}:${String(s.duration%60).padStart(2,'0')}</small>
    <small>${un?`<span class="stars">${stars(rec.stars)}</span> ${T(CFG.mastery[Math.max(0,rec.stars-1)])} · ${rec.best} · x${rec.bestCombo}`:T('locked',{s:req?req.title:'?'})}</small></div>
    ${un?`<button class="p" data-id="${s.id}">${T('play')}</button>`:''}</div>`}).join('');
@@ -52,9 +53,9 @@ function renderHome(){
   <div class="row" style="margin-bottom:12px"><button id="hc" style="flex:1">${T('challenges')}</button><button id="hk" style="flex:1">${T('collection')}</button></div>
   <h2>${T('songs')}</h2>${cards}`;
  el.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>startSong(SONGS.find(s=>s.id===b.dataset.id)));
- document.getElementById('gs').onclick=()=>{renderSettings();show('settings')};
- document.getElementById('hc').onclick=renderChallenges;
- document.getElementById('hk').onclick=renderCollection;
+ document.getElementById('gs').onclick=()=>{push('settings');renderSettings();show('settings')};
+ document.getElementById('hc').onclick=()=>{push('challenges');renderChallenges()};
+ document.getElementById('hk').onclick=()=>{push('collection');renderCollection()};
 }
 function renderSettings(){
  const el=document.getElementById('settings'),t=S.tech;
@@ -72,17 +73,9 @@ function renderSettings(){
  el.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{S.tech.offsetMs=Math.max(-300,Math.min(300,S.tech.offsetMs+ +b.dataset.o));document.getElementById('ov').textContent=S.tech.offsetMs;Store.save()});
  el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{lang=b.dataset.l;S.core.language=lang;Store.save();renderSettings()});
  document.getElementById('rs').onclick=()=>{if(confirm(T('resetq'))){try{localStorage.removeItem(CFG.storeKey)}catch(e){}S=Store.defaults();lang=S.core.language;renderSettings()}};
- document.getElementById('bk').onclick=()=>{renderHome();show('home')};
- document.getElementById('cal').onclick=renderCalib;
+ document.getElementById('bk').onclick=()=>history.back();
+ document.getElementById('cal').onclick=()=>{push('calib');renderCalib()};
 }
-/* pause auto si l'app perd le focus */
-document.addEventListener('visibilitychange',()=>{
- const r=E.run;if(!document.hidden||!r||r.state!=='play')return;
- if(Aud.ctx)Aud.ctx.suspend();r.state='paused';
- const p=document.getElementById('pause');p.innerHTML=`<h2>${T('paused')}</h2><button class="p" id="rsm">${T('resume')}</button><div style="height:10px"></div><button id="qt">${T('menu')}</button>`;show('pause');
- document.getElementById('rsm').onclick=()=>{show(null);Aud.ctx.resume().then(()=>{r.state='play'})};
- document.getElementById('qt').onclick=()=>{r.state='done';cancelAnimationFrame(E.raf);Aud.stop();renderHome();show('home')};
-});
 /* API de module pour le futur hub JIEE PLAY */
 window.JIEEBEAT={getGameProgress:()=>S.jieebeat.songs,getStatistics:()=>S.jieebeat.stats,getProfileData:()=>S.core,getAchievements:()=>S.core.achievements};
 
@@ -96,6 +89,7 @@ function renderCalib(){
  for(let i=0;i<14;i++){const t=t0+i*iv,o=ctx.createOscillator(),gn=ctx.createGain();o.frequency.value=880;
   gn.gain.setValueAtTime(.5,t);gn.gain.exponentialRampToValueAtTime(.001,t+.08);o.connect(gn);gn.connect(ctx.destination);o.start(t);o.stop(t+.1);beats.push(t)}
  const close=()=>{try{ctx.close()}catch(e){}};
+ calibStop=()=>{done=true;close()};
  document.getElementById('ct').onpointerdown=()=>{
   if(done)return;const p=ctx.currentTime,b=Math.round((p-t0)/iv);if(b<2||b>13)return;/* 2 premières pulsations = échauffement */
   ds.push(p-beats[b]);document.getElementById('cn').textContent=ds.length+'/8';
@@ -103,5 +97,5 @@ function renderCalib(){
    S.tech.offsetMs=off;Store.save();close();
    document.getElementById('cn').textContent=T('calibres',{n:off});
    const ct=document.getElementById('ct');ct.textContent=T('again');ct.onpointerdown=null;ct.onclick=renderCalib}};
- document.getElementById('cb').onclick=()=>{done=true;close();renderSettings()};
+ document.getElementById('cb').onclick=()=>history.back();
 }

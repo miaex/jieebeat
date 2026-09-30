@@ -14,5 +14,5 @@ function renderCollection(){
  el.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const it=ITEMS.find(x=>x.id===b.dataset.b);
   if(!it||S.core.currency.jieeCoins<it.price){b.textContent=T('short');return}
   S.core.currency.jieeCoins-=it.price;own.push(it.id);S.jieebeat.equipped.theme=it.id;applyTheme();Store.save();renderCollection()});
- document.getElementById('bk2').onclick=()=>{renderHome();show('home')};
+ document.getElementById('bk2').onclick=()=>history.back();
 }
