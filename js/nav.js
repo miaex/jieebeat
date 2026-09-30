@@ -20,20 +20,22 @@ function pauseGame(){
  const r=E.run;if(!r||r.state!=='play')return false;
  if(Aud.ctx)Aud.ctx.suspend();r.state='paused';
  const p=document.getElementById('pause');
- p.innerHTML=`<h2>${T('paused')}</h2><button class="p" id="rsm">${T('resume')}</button><div style="height:10px"></div><button id="qt">${T('menu')}</button>`;
+ p.innerHTML=`<h2>${T('paused')}</h2>${r.won?'<div class="sub">'+T('pausewon')+'</div>':''}<button class="p" id="rsm">${T('resume')}</button><div style="height:10px"></div>${r.won?'<button id="fin">'+T('finish')+'</button><div style="height:10px"></div>':''}<button id="qt">${T('menu')}</button>`;
  show('pause');CUR='pause';
  document.getElementById('rsm').onclick=()=>{history.replaceState({s:'game'},'');CUR='game';show(null);Aud.ctx.resume().then(()=>{r.state='play'})};
  document.getElementById('qt').onclick=()=>history.back();
+ const fb=document.getElementById('fin');if(fb)fb.onclick=()=>finish(r,false);
  return true;
 }
 function route(s){
  const r=E.run;if(s!=='song'&&store)store.stopPreview();
  if(r&&r.state==='play'&&s!=='pause'){pauseGame();history.pushState({s:'pause'},'');return}
- if(r)quitRun();
+ if(r){if(!r.settled&&['paused','over'].includes(r.state)&&r.judged>0)settle(r,false);quitRun()}
  if(calibStop){calibStop();calibStop=null}
- CUR=(s==='settings'||s==='challenges'||s==='collection'||s==='song')?s:'home';
+ CUR=(s==='settings'||s==='challenges'||s==='collection'||s==='song'||s==='how')?s:'home';
  if(CUR==='settings'){renderSettings();show('settings')}
  else if(CUR==='song')renderSong();
+ else if(CUR==='how')renderHow();
  else if(CUR==='challenges')renderChallenges();
  else if(CUR==='collection')renderCollection();
  else{renderHome();show('home')}
@@ -45,6 +47,7 @@ addEventListener('popstate',e=>{
 });
 function initNav(){
  history.replaceState({s:'guard'},'');
+ matchMedia('(orientation:landscape) and (max-height:520px)').addEventListener('change',e=>{if(e.matches&&pauseGame())history.replaceState({s:'pause'},'')});
  document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>goTab(b.dataset.t));
  /* Chrome ignore les entrées d'historique créées sans geste utilisateur : on arme au premier toucher */
  addEventListener('pointerup',()=>{if(navArmed)return;navArmed=true;history.pushState({s:'home'},'');Aud.ensure()},true);

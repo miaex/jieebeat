@@ -7,8 +7,8 @@
   "fr": "Premier morceau",
   "en": "First song",
   "d": {
-   "fr": "Termine un morceau",
-   "en": "Clear a song"
+   "fr": "Remporte ta première victoire",
+   "en": "Win your first song"
   }
  },
  {
@@ -19,8 +19,8 @@
   "fr": "Habitué",
   "en": "Regular",
   "d": {
-   "fr": "Termine 10 morceaux",
-   "en": "Clear 10 songs"
+   "fr": "Remporte 10 victoires",
+   "en": "Win 10 songs"
   }
  },
  {

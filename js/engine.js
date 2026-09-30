@@ -5,7 +5,9 @@ let W=0,H=0,DPR=1;
 function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;g.setTransform(DPR,0,0,DPR,0,0)}
 addEventListener('resize',resize);resize();
 const E={run:null,raf:0};
-let LANE_COL=['#22e6c7','#7c5cff','#ff4fa3','#ffd166'],THEME_BG='#07060f',THEME_FEVER='#180a2e';
+let LANE_COL=['#22e6c7','#7c5cff','#ff4fa3','#ffd166'],THEME_BG='#07060f',THEME_FEVER='#180a2e',FX={particles:1,ring:1};
+let WARP={a:0,g:1,m:1};/* vitesse de chute : 1x au départ, monte jusqu'à m x à l'objectif (fonction de déformation du temps) */
+function P(t){const {a,g,m}=WARP;if(t<=a||m===1)return t;const d=g-a;if(t<=g){const u=(t-a)/d;return t+(m-1)*d*u*u*u/3}return g+(m-1)*d/3+m*(t-g)}
 
 async function startSong(song,modeName='normal'){
  if(!song||!Aud.init()){alert(T('err'));return}
@@ -20,12 +22,15 @@ async function startSong(song,modeName='normal'){
  if(E.run!==r)return;
  if(!validChart(song.chart)){alert(T('err'));history.back();return}
  r.notes=song.chart.notes.map(n=>({...n,end:n.time+n.duration,state:0}));
- APPROACH=Math.max(1.4,Math.min(2.6,60/song.bpm*3.5));/* vitesse de chute calée sur le BPM */
+ APPROACH=Math.max(1.4,Math.min(2.6,60/song.bpm*3.5));/* vitesse de départ calée sur le BPM */
+ const ab=song.chart.audioStart||0,dur=song.chart.length-ab;
+ r.goalSec=Math.min(CFG.goalSec,Math.max(10,dur-1));r.goalT=ab+r.goalSec;
+ WARP={a:ab,g:r.goalT,m:Math.min(CFG.speedEnd[Math.min(song.level,5)-1]||1.8,APPROACH/.7)};
  r.state='ready';
 }
 function laneOf(x){return Math.max(0,Math.min(CFG.lanes-1,Math.floor(x/W*CFG.lanes)))}
 let APPROACH=CFG.approach;/* durée de chute d'une touche, calée sur le BPM de la chanson */
-function yOf(t,now){const hy=H*CFG.hitYRatio;return hy-((t-now)/APPROACH)*hy}
+function yOf(t,now){const hy=H*CFG.hitYRatio;return hy-((P(t)-P(now))/APPROACH)*hy}
 function mult(r){return Math.min(CFG.multiplierMax,1+Math.floor(r.combo/CFG.multiplierEvery))}
 function judge(r,n,dt){
  const w=CFG.windows,a=Math.abs(dt);const q=a<=w.PERFECT?'PERFECT':a<=w.GREAT?'GREAT':'GOOD';
@@ -33,7 +38,7 @@ function judge(r,n,dt){
  r.score+=Math.round(CFG.points[q]*mult(r)*(1+(r.song.level-1)*.25));
  r.label=q;r.labelT=performance.now();Aud.hit(n.lane,q);buzz(q==='PERFECT'?8:4);burst(r,n.lane,q);r.flash=1;r.lf[n.lane]=1;
 }
-function burst(r,lane,q){if(S.tech.reduce)return;const x=(lane+.5)*W/CFG.lanes,y=H*CFG.hitYRatio,c=r.combo>=CFG.feverCombo?'#fff':LANE_COL[lane],k=q==='PERFECT'?10:6;r.rings.push({x,y,l:1,c});
+function burst(r,lane,q){if(S.tech.reduce)return;const x=(lane+.5)*W/CFG.lanes,y=H*CFG.hitYRatio,c=r.combo>=CFG.feverCombo?'#fff':LANE_COL[lane],k=Math.round((q==='PERFECT'?10:6)*FX.particles);r.rings.push({x,y,l:1,c,sc:FX.ring});
  for(let i=0;i<k&&r.parts.length<80;i++){const a=Math.random()*6.28,s=60+Math.random()*160;r.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-60,l:1,c})}}
 function buzz(ms){if(S.tech.vibrate&&navigator.vibrate)try{navigator.vibrate(ms)}catch(e){}}
 function down(e){
@@ -64,6 +69,7 @@ function fail(r,why){
 }
 function update(r){
  const t=Aud.songTime();
+ if(!r.won&&t>=r.goalT){r.won=true;r.winT=performance.now();Aud.win();buzz(60);if(!S.tech.reduce)r.flash=2}/* objectif atteint : victoire acquise */
  for(const n of r.notes){
   if(n.state===0&&t-n.time>CFG.windows.GOOD){if(r.mode.failOnMiss){fail(r,'miss');break}n.state=3;r.counts.MISS++;r.combo=0;Aud.miss()}
   if(n.state===1&&t>=n.end){n.state=2;r.score+=Math.round(150*mult(r));r.combo++;r.maxCombo=Math.max(r.maxCombo,r.combo);
@@ -100,17 +106,20 @@ function draw(r,t){
   g.globalAlpha=p.l;g.fillStyle=p.c;g.fillRect(p.x-2,p.y-2,4,4)}
  g.globalAlpha=1;
  for(let i=r.rings.length-1;i>=0;i--){const o=r.rings[i];o.l-=.07;if(o.l<=0){r.rings.splice(i,1);continue}
-  g.globalAlpha=o.l;g.strokeStyle=o.c;g.lineWidth=3;g.beginPath();g.arc(o.x,o.y,14+(1-o.l)*70,0,6.283);g.stroke()}
+  g.globalAlpha=o.l;g.strokeStyle=o.c;g.lineWidth=3;g.beginPath();g.arc(o.x,o.y,14+(1-o.l)*70*(o.sc||1),0,6.283);g.stroke()}
  g.globalAlpha=1;
  g.fillStyle='rgba(255,255,255,.55)';g.fillRect(20,22,5,20);g.fillRect(31,22,5,20);/* bouton pause */
  /* HUD */
  g.textAlign='center';g.fillStyle='#f3efff';g.font='800 28px "Trebuchet MS",sans-serif';g.fillText(String(r.score).padStart(7,'0'),W/2,44+0);
  g.font='700 13px "Trebuchet MS",sans-serif';g.fillStyle='#8d86b3';g.fillText(`${T('mult')} ×${mult(r)}${fever?'  FEVER':''}`,W/2,64);
- const len=r.song.chart.length,pr=Math.max(0,Math.min(1,t/len));g.fillStyle='#221c4d';g.fillRect(16,78,W-32,4);g.fillStyle='#22e6c7';g.fillRect(16,78,(W-32)*pr,4);
+ const len=r.song.chart.length-ab,pr=Math.max(0,Math.min(1,(t-ab)/(r.won?len:r.goalSec||1)));g.fillStyle='#221c4d';g.fillRect(16,78,W-32,4);g.fillStyle=r.won?'#ffd166':'#22e6c7';g.fillRect(16,78,(W-32)*pr,4);
+ if(r.won){const gx=16+(W-32)*(r.goalSec/len);g.fillStyle='#fff';g.fillRect(gx-1,74,2,12)}
  let sec='';for(const s of (r.song.chart.sections||[]))if(t>=s[1])sec=s[0];
  g.fillStyle='#8d86b3';g.textAlign='left';g.fillText(sec,16,100);
+ g.textAlign='right';g.fillStyle=r.won?'#ffd166':'#8d86b3';g.fillText(r.won?T('wonbadge'):T('goalhud')+' '+mmss(Math.round(r.goalSec||0)),W-16,100);g.textAlign='left';
  if(r.combo>1){g.textAlign='center';g.fillStyle=fever?'#fff':'#f3efff';g.globalAlpha=.9;g.font=`800 ${Math.min(72,40+r.combo/3)}px "Trebuchet MS",sans-serif`;g.fillText(r.combo,W/2,H*.4);
   g.font='700 13px "Trebuchet MS"';g.fillText('COMBO',W/2,H*.4+22);g.globalAlpha=1}
+ if(r.winT&&performance.now()-r.winT<3800){const a=Math.min(1,(3800-(performance.now()-r.winT))/600);g.globalAlpha=a;g.textAlign='center';g.fillStyle='rgba(7,6,15,.55)';g.fillRect(0,H*.22,W,96);g.fillStyle='#ffd166';g.font='800 40px "Trebuchet MS"';g.fillText(T('winbanner'),W/2,H*.22+46);g.fillStyle='#fff';g.font='700 15px "Trebuchet MS"';g.fillText(T('winsub'),W/2,H*.22+74);g.globalAlpha=1}
  if(performance.now()-r.labelT<400){g.textAlign='center';g.font='800 22px "Trebuchet MS"';g.fillStyle=r.label==='PERFECT'?'#22e6c7':r.label==='GREAT'?'#ffd166':'#fff';g.fillText(r.label,W/2,hy-50)}
  if(r.state==='loading'){g.textAlign='center';g.fillStyle='#fff';g.font='700 20px "Trebuchet MS"';g.fillText(T('loading'),W/2,H*.45)}
  if(r.state==='ready'){g.textAlign='center';g.fillStyle='rgba(7,6,15,.6)';g.fillRect(0,H*.4,W,90);g.fillStyle='#fff';g.font='800 26px "Trebuchet MS"';g.fillText(T('tap'),W/2,H*.4+40);g.font='14px "Trebuchet MS"';g.fillStyle='#8d86b3';g.fillText(r.song.title,W/2,H*.4+66)}

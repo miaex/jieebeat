@@ -18,4 +18,5 @@ const Aud={ctx:null,T0:0,music:null,sfx:null,src:null,rate:1,
  songTime(){return this.ctx?(this.ctx.currentTime-this.T0)*this.rate-S.tech.offsetMs/1000:0},
  hit(lane,q){if(!this.ctx||!this.sfx)return;const f=[261.6,329.6,392,523.3][lane];this.osc('sine',f*(q==='PERFECT'?2:1),this.ctx.currentTime,.18,.35,this.sfx)},
  miss(){if(this.ctx&&this.sfx)this.osc('sawtooth',140,this.ctx.currentTime,.4,.4,this.sfx,40)},
+ win(){if(!this.ctx||!this.sfx)return;const t=this.ctx.currentTime;[523.3,659.3,784,1046.5].forEach((f,i)=>this.osc('triangle',f,t+i*.09,.5,.3,this.sfx))},
  stop(){try{if(this.src)this.src.stop()}catch(e){}this.src=null;try{if(this.music)this.music.disconnect()}catch(e){}}};

@@ -58,5 +58,32 @@
    "#9a9a9a",
    "#e6e6e6"
   ]
+ },
+ {
+  "id": "fx-basic",
+  "type": "fx",
+  "price": 0,
+  "fr": "Classique",
+  "en": "Classic",
+  "particles": 1,
+  "ring": 1
+ },
+ {
+  "id": "fx-spark",
+  "type": "fx",
+  "price": 80,
+  "fr": "Étincelles",
+  "en": "Sparks",
+  "particles": 2,
+  "ring": 0.8
+ },
+ {
+  "id": "fx-wave",
+  "type": "fx",
+  "price": 80,
+  "fr": "Ondes",
+  "en": "Waves",
+  "particles": 0.4,
+  "ring": 1.9
  }
 ]

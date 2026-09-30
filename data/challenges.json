@@ -12,16 +12,16 @@
   "type": "clear",
   "target": 1,
   "coins": 10,
-  "fr": "Terminer une chanson",
-  "en": "Clear a song"
+  "fr": "Remporter une victoire (1:30)",
+  "en": "Win a song (1:30)"
  },
  {
   "id": "clear2",
   "type": "clear",
   "target": 2,
   "coins": 20,
-  "fr": "Terminer 2 chansons",
-  "en": "Clear 2 songs"
+  "fr": "Remporter 2 victoires",
+  "en": "Win 2 songs"
  },
  {
   "id": "combo25",
@@ -44,8 +44,8 @@
   "type": "accuracy",
   "target": 90,
   "coins": 20,
-  "fr": "Terminer une chanson à 90 % de précision",
-  "en": "Clear a song with 90% accuracy"
+  "fr": "Gagner avec 90 % de précision",
+  "en": "Win with 90% accuracy"
  },
  {
   "id": "notes150",
