@@ -27,12 +27,13 @@ function pauseGame(){
  return true;
 }
 function route(s){
- const r=E.run;
+ const r=E.run;if(s!=='song'&&store)store.stopPreview();
  if(r&&r.state==='play'&&s!=='pause'){pauseGame();history.pushState({s:'pause'},'');return}
  if(r)quitRun();
  if(calibStop){calibStop();calibStop=null}
- CUR=(s==='settings'||s==='challenges'||s==='collection')?s:'home';
+ CUR=(s==='settings'||s==='challenges'||s==='collection'||s==='song')?s:'home';
  if(CUR==='settings'){renderSettings();show('settings')}
+ else if(CUR==='song')renderSong();
  else if(CUR==='challenges')renderChallenges();
  else if(CUR==='collection')renderCollection();
  else{renderHome();show('home')}
@@ -46,6 +47,6 @@ function initNav(){
  history.replaceState({s:'guard'},'');
  document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>goTab(b.dataset.t));
  /* Chrome ignore les entrées d'historique créées sans geste utilisateur : on arme au premier toucher */
- addEventListener('pointerup',()=>{if(navArmed)return;navArmed=true;history.pushState({s:'home'},'')},true);
+ addEventListener('pointerup',()=>{if(navArmed)return;navArmed=true;history.pushState({s:'home'},'');Aud.ensure()},true);
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&pauseGame())history.replaceState({s:'pause'},'')});
 }

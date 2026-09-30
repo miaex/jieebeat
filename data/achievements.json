@@ -1,0 +1,158 @@
+[
+ {
+  "id": "first",
+  "type": "cleared",
+  "target": 1,
+  "coins": 10,
+  "fr": "Premier morceau",
+  "en": "First song",
+  "d": {
+   "fr": "Termine un morceau",
+   "en": "Clear a song"
+  }
+ },
+ {
+  "id": "clear10",
+  "type": "cleared",
+  "target": 10,
+  "coins": 30,
+  "fr": "Habitué",
+  "en": "Regular",
+  "d": {
+   "fr": "Termine 10 morceaux",
+   "en": "Clear 10 songs"
+  }
+ },
+ {
+  "id": "notes1k",
+  "type": "notes",
+  "target": 1000,
+  "coins": 20,
+  "fr": "1000 notes",
+  "en": "1000 notes",
+  "d": {
+   "fr": "Joue 1000 notes",
+   "en": "Hit 1000 notes"
+  }
+ },
+ {
+  "id": "notes5k",
+  "type": "notes",
+  "target": 5000,
+  "coins": 40,
+  "fr": "5000 notes",
+  "en": "5000 notes",
+  "d": {
+   "fr": "Joue 5000 notes",
+   "en": "Hit 5000 notes"
+  }
+ },
+ {
+  "id": "combo50",
+  "type": "combo",
+  "target": 50,
+  "coins": 15,
+  "fr": "Combo 50",
+  "en": "Combo 50",
+  "d": {
+   "fr": "Atteins un combo de 50",
+   "en": "Reach a 50 combo"
+  }
+ },
+ {
+  "id": "combo100",
+  "type": "combo",
+  "target": 100,
+  "coins": 25,
+  "fr": "Combo 100",
+  "en": "Combo 100",
+  "d": {
+   "fr": "Atteins un combo de 100",
+   "en": "Reach a 100 combo"
+  }
+ },
+ {
+  "id": "combo250",
+  "type": "combo",
+  "target": 250,
+  "coins": 40,
+  "fr": "Combo 250",
+  "en": "Combo 250",
+  "d": {
+   "fr": "Atteins un combo de 250",
+   "en": "Reach a 250 combo"
+  }
+ },
+ {
+  "id": "star5",
+  "type": "stars5",
+  "target": 1,
+  "coins": 30,
+  "fr": "Cinq étoiles",
+  "en": "Five stars",
+  "d": {
+   "fr": "Obtiens 5 étoiles sur un morceau",
+   "en": "Get 5 stars on a song"
+  }
+ },
+ {
+  "id": "stars20",
+  "type": "totalStars",
+  "target": 20,
+  "coins": 30,
+  "fr": "20 étoiles",
+  "en": "20 stars",
+  "d": {
+   "fr": "Cumule 20 étoiles",
+   "en": "Collect 20 stars"
+  }
+ },
+ {
+  "id": "stars50",
+  "type": "totalStars",
+  "target": 50,
+  "coins": 60,
+  "fr": "50 étoiles",
+  "en": "50 stars",
+  "d": {
+   "fr": "Cumule 50 étoiles",
+   "en": "Collect 50 stars"
+  }
+ },
+ {
+  "id": "streak3",
+  "type": "streak",
+  "target": 3,
+  "coins": 20,
+  "fr": "Série de 3",
+  "en": "3-day streak",
+  "d": {
+   "fr": "Joue 3 jours de suite",
+   "en": "Play 3 days in a row"
+  }
+ },
+ {
+  "id": "streak7",
+  "type": "streak",
+  "target": 7,
+  "coins": 50,
+  "fr": "Série de 7",
+  "en": "7-day streak",
+  "d": {
+   "fr": "Joue 7 jours de suite",
+   "en": "Play 7 days in a row"
+  }
+ },
+ {
+  "id": "chapter",
+  "type": "chapters",
+  "target": 1,
+  "coins": 50,
+  "fr": "Chapitre complet",
+  "en": "Chapter cleared",
+  "d": {
+   "fr": "Termine tous les morceaux d un chapitre",
+   "en": "Clear every song of a chapter"
+  }
+ }
+]

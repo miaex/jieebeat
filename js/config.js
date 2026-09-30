@@ -7,7 +7,8 @@ const CFG={
  multiplierEvery:10, multiplierMax:4, feverCombo:40,
  holdReleaseTolerance:.25,
  stars:[0,.85,.92,.97,.99], mastery:['discover','initiate','confirmed','expert','master'],
- modes:{normal:{failOnMiss:true}},
+ modes:{normal:{failOnMiss:true,rate:1},practice:{failOnMiss:false,rate:.75,ranked:false}},
+ chapterUnlockStars:4, chapterNames:['AWAKENING','PULSE','RUSH','AFTER DARK','JIEE'],
  coinsPerStar:10,
  storeKey:'jieebeat.save', schemaVersion:1
 };

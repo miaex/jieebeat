@@ -8,7 +8,7 @@ function renderCollection(){
  el.innerHTML=`<h2>${T('collection')}</h2><div class="sub">◆ ${S.core.currency.jieeCoins} ${T('coins')}</div>`+ITEMS.map(i=>{
   const has=own.includes(i.id),sw=i.lanes.map(c=>`<i style="display:inline-block;width:14px;height:34px;border-radius:4px;margin-right:3px;background:${c}"></i>`).join('');
   return `<div class="card"><div>${sw}<b style="margin-left:8px">${i[lang]}</b></div>${has?(eq===i.id?'<span class="stars">✓</span>':`<button data-e="${i.id}">${T('equip')}</button>`):`<button class="p" data-b="${i.id}">${i.price} ◆</button>`}</div>`}).join('')+
-  `<div class="sp"></div><button class="p" id="bk2">${T('back')}</button>`;
+  collectionExtras()+`<div class="sp"></div><button class="p" id="bk2">${T('back')}</button>`;
  show('sub');
  el.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{S.jieebeat.equipped.theme=b.dataset.e;applyTheme();Store.save();renderCollection()});
  el.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const it=ITEMS.find(x=>x.id===b.dataset.b);
