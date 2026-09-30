@@ -5,7 +5,7 @@ let W=0,H=0,DPR=1;
 function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;g.setTransform(DPR,0,0,DPR,0,0)}
 addEventListener('resize',resize);resize();
 const E={run:null,raf:0};
-const LANE_COL=['#22e6c7','#7c5cff','#ff4fa3','#ffd166'];
+let LANE_COL=['#22e6c7','#7c5cff','#ff4fa3','#ffd166'],THEME_BG='#07060f',THEME_FEVER='#180a2e';
 
 function startSong(song){
  if(!song||!validChart(song.chart)){alert(T('err'));return}
@@ -68,7 +68,7 @@ function loop(now){
 }
 function draw(r,t){
  const n=CFG.lanes,lw=W/n,hy=H*CFG.hitYRatio,fever=r.combo>=CFG.feverCombo,reduce=S.tech.reduce;
- g.fillStyle=fever?'#180a2e':'#07060f';g.fillRect(0,0,W,H);
+ g.fillStyle=fever?THEME_FEVER:THEME_BG;g.fillRect(0,0,W,H);
  if(r.flash>0&&!reduce){g.fillStyle=`rgba(124,92,255,${r.flash*.12})`;g.fillRect(0,0,W,H);r.flash=Math.max(0,r.flash-.08)}
  for(let i=0;i<n;i++){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,LANE_COL[i]+(fever?'40':'18'));g.fillStyle=gr;g.fillRect(i*lw,0,lw,H);
   g.fillStyle='rgba(255,255,255,.07)';g.fillRect(i*lw,0,1,H)}

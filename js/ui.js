@@ -15,6 +15,7 @@ function finish(r,ok){
   const nx=SONGS.find(s=>s.requires===r.song.id);if(nx&&!S.jieebeat.unlocked.includes(nx.id)){S.jieebeat.unlocked.push(nx.id);newUnlock=nx}}
  const day=Store.today(),sk=S.jieebeat.streak;
  if(sk.lastDay!==day){const y=new Date();y.setDate(y.getDate()-1);sk.count=sk.lastDay===y.toLocaleDateString('sv')?sk.count+1:1;sk.lastDay=day}
+ const bonus=reportRun(r,ok,acc);
  Store.save();
  const left=Math.max(0,Math.round(r.song.chart.length-(r.failT||0)));
  const el=document.getElementById('result');
@@ -48,9 +49,12 @@ function renderHome(){
    ${un?`<button class="p" data-id="${s.id}">${T('play')}</button>`:''}</div>`}).join('');
  el.innerHTML=`<div class="row"><h1>JIEEBEAT</h1><button id="gs" aria-label="${T('settings')}">⚙</button></div>
   <div class="sub">🔥 ${sk.count} ${T('streak')} · ◆ ${S.core.currency.jieeCoins} ${T('coins')}</div>
+  <div class="row" style="margin-bottom:12px"><button id="hc" style="flex:1">${T('challenges')}</button><button id="hk" style="flex:1">${T('collection')}</button></div>
   <h2>${T('songs')}</h2>${cards}`;
  el.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>startSong(SONGS.find(s=>s.id===b.dataset.id)));
  document.getElementById('gs').onclick=()=>{renderSettings();show('settings')};
+ document.getElementById('hc').onclick=renderChallenges;
+ document.getElementById('hk').onclick=renderCollection;
 }
 function renderSettings(){
  const el=document.getElementById('settings'),t=S.tech;

@@ -1,3 +1,3 @@
 'use strict';
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-loadSongs().then(()=>{renderHome();show('home')});
+Promise.all([loadSongs(),loadChallenges(),loadCollection()]).then(()=>{renderHome();show('home')});

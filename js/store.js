@@ -3,7 +3,7 @@
 const Store={
  defaults(){return{schemaVersion:CFG.schemaVersion,
   core:{playerId:'local-'+Math.random().toString(36).slice(2,9),nickname:'Player',language:navigator.language&&navigator.language.startsWith('en')?'en':'fr',currency:{jieeCoins:0},achievements:[]},
-  jieebeat:{unlocked:['song-001'],songs:{},streak:{count:0,lastDay:''},stats:{played:0,cleared:0,notes:0,bestCombo:0,playMs:0},collection:['theme-neon']},
+  jieebeat:{unlocked:['song-001'],songs:{},streak:{count:0,lastDay:''},stats:{played:0,cleared:0,notes:0,bestCombo:0,playMs:0},collection:['theme-neon'],equipped:{theme:'theme-neon'},dailyChallenges:{day:'',items:[]}},
   tech:{offsetMs:0,music:.8,sfx:.8,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,vibrate:true}}},
  load(){try{const r=JSON.parse(localStorage.getItem(CFG.storeKey));if(!r||typeof r!=='object')return this.defaults();return this.migrate(r)}catch(e){return this.defaults()}},
  migrate(r){const d=this.defaults();/* v1 -> futures migrations ici */

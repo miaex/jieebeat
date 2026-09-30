@@ -1,0 +1,58 @@
+[
+ {
+  "id": "play3",
+  "type": "play",
+  "target": 3,
+  "coins": 15,
+  "fr": "Jouer 3 chansons",
+  "en": "Play 3 songs"
+ },
+ {
+  "id": "clear1",
+  "type": "clear",
+  "target": 1,
+  "coins": 10,
+  "fr": "Terminer une chanson",
+  "en": "Clear a song"
+ },
+ {
+  "id": "clear2",
+  "type": "clear",
+  "target": 2,
+  "coins": 20,
+  "fr": "Terminer 2 chansons",
+  "en": "Clear 2 songs"
+ },
+ {
+  "id": "combo25",
+  "type": "combo",
+  "target": 25,
+  "coins": 10,
+  "fr": "Faire un combo de 25",
+  "en": "Reach a 25 combo"
+ },
+ {
+  "id": "combo40",
+  "type": "combo",
+  "target": 40,
+  "coins": 15,
+  "fr": "Faire un combo de 40",
+  "en": "Reach a 40 combo"
+ },
+ {
+  "id": "acc90",
+  "type": "accuracy",
+  "target": 90,
+  "coins": 20,
+  "fr": "Terminer une chanson à 90 % de précision",
+  "en": "Clear a song with 90% accuracy"
+ },
+ {
+  "id": "notes150",
+  "type": "notes",
+  "target": 150,
+  "coins": 15,
+  "fr": "Toucher 150 notes",
+  "en": "Hit 150 notes"
+ }
+]

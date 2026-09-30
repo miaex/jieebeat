@@ -1,0 +1,62 @@
+[
+ {
+  "id": "theme-neon",
+  "type": "theme",
+  "price": 0,
+  "fr": "Néon",
+  "en": "Neon",
+  "bg": "#07060f",
+  "fever": "#180a2e",
+  "lanes": [
+   "#22e6c7",
+   "#7c5cff",
+   "#ff4fa3",
+   "#ffd166"
+  ]
+ },
+ {
+  "id": "theme-sunset",
+  "type": "theme",
+  "price": 60,
+  "fr": "Crépuscule",
+  "en": "Sunset",
+  "bg": "#12060a",
+  "fever": "#2a0c14",
+  "lanes": [
+   "#ff7a59",
+   "#ff4fa3",
+   "#ffb347",
+   "#ffe066"
+  ]
+ },
+ {
+  "id": "theme-aurora",
+  "type": "theme",
+  "price": 100,
+  "fr": "Aurore",
+  "en": "Aurora",
+  "bg": "#04100f",
+  "fever": "#0a2320",
+  "lanes": [
+   "#5cffb0",
+   "#3fd0ff",
+   "#9d7bff",
+   "#eaffb0"
+  ]
+ },
+ {
+  "id": "theme-mono",
+  "type": "theme",
+  "price": 150,
+  "fr": "Monochrome",
+  "en": "Mono",
+  "bg": "#0a0a0a",
+  "fever": "#1c1c1c",
+  "lanes": [
+   "#ffffff",
+   "#c8c8c8",
+   "#9a9a9a",
+   "#e6e6e6"
+  ]
+ }
+]
