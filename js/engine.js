@@ -26,7 +26,7 @@ async function startSong(song,modeName='normal'){
  APPROACH=CFG.speedRef/(CFG.speedStart+(CFG.speedLast-CFG.speedStart)*f);/* la chute accélère de morceau en morceau */
  const dur=song.chart.length;
  r.goalSec=Math.min(CFG.goalSec,Math.max(10,dur-1));r.goalT=r.goalSec;/* temps de jeu : 0 = clic de départ */
- WARP={a:0,g:r.goalT,m:Math.min(CFG.rampStart+(CFG.rampLast-CFG.rampStart)*f,APPROACH/.75)};
+ WARP={a:0,g:r.goalT,m:Math.min(CFG.rampStart+(CFG.rampLast-CFG.rampStart)*f,APPROACH/CFG.minApproach)};
  r.state='ready';
 }
 function laneOf(x){return Math.max(0,Math.min(CFG.lanes-1,Math.floor(x/W*CFG.lanes)))}
