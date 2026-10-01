@@ -4,8 +4,8 @@
   "type": "play",
   "target": 3,
   "coins": 15,
-  "fr": "Jouer 3 chansons",
-  "en": "Play 3 songs"
+  "fr": "Gagner 3 chansons",
+  "en": "Win 3 songs"
  },
  {
   "id": "clear1",
@@ -52,7 +52,7 @@
   "type": "notes",
   "target": 150,
   "coins": 15,
-  "fr": "Toucher 150 notes",
-  "en": "Hit 150 notes"
+  "fr": "Toucher 150 notes en gagnant",
+  "en": "Hit 150 notes in winning runs"
  }
 ]

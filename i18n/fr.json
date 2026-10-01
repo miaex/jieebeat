@@ -97,7 +97,10 @@
 "how5t": "La vitesse monte",
 "how5b": "Pendant ces 90 secondes, la chute s'accélère et les notes se multiplient. Franchir la barre dorée, c'est la victoire.",
 "how6t": "Étoiles et chapitres",
-"how6b": "Plus de précision et de durée, plus d'étoiles (jusqu'à 5). Les étoiles ouvrent les chapitres suivants, les JIEE Coins ouvrent des thèmes et des effets.",
+"how6b": "Gagne un morceau pour obtenir au moins 2 étoiles. 5 étoiles dans un chapitre ouvrent le suivant. Perdre avant 1:30 ne rapporte rien.",
 "how7t": "Astuces",
-"how7b": "Joue avec du son. Si les touches semblent décalées, lance la calibration dans les Réglages. Le bouton retour du téléphone met en pause. Le mode Entraînement (×0,75) sert à apprendre."
+"how7b": "Joue avec du son : les touches jouent des percussions (grosse caisse, caisse claire, shaker, clap), à couper dans les Réglages. Si les touches semblent décalées, lance la calibration. Le bouton retour du téléphone met en pause. Le mode Entraînement (×0,75) sert à apprendre.",
+"continue": "CONTINUER",
+"norew": "Aucune récompense : il faut tenir {t} pour gagner.",
+"padsounds": "Sons de percussions (drum pad)"
 }

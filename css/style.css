@@ -66,3 +66,5 @@ img.cover.big{padding:0}
 @keyframes fall{0%{top:-40px;opacity:1}80%{top:90px;opacity:1}100%{top:90px;opacity:0}}
 .card small{line-height:1.45}
 @media (prefers-reduced-motion:reduce){.demo .t{animation:none;top:56px}}
+
+.card.cur{border-color:var(--b)}.chap.dim{opacity:.55}

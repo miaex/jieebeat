@@ -97,7 +97,10 @@
 "how5t": "Speed rises",
 "how5b": "During those 90 seconds, tiles fall faster and notes get denser. Crossing the golden marker means victory.",
 "how6t": "Stars and chapters",
-"how6b": "More accuracy and time earn more stars (up to 5). Stars open the next chapters, JIEE Coins unlock themes and effects.",
+"how6b": "Win a song to earn at least 2 stars. 5 stars in a chapter open the next one. Losing before 1:30 earns nothing.",
 "how7t": "Tips",
-"how7b": "Play with sound on. If tiles feel off-beat, run the calibration in Settings. The phone back button pauses. Practice mode (×0.75) is made for learning."
+"how7b": "Play with sound on: tiles play percussion (kick, snare, shaker, clap), which you can turn off in Settings. If tiles feel off-beat, run the calibration. The phone back button pauses. Practice mode (×0.75) is made for learning.",
+"continue": "CONTINUE",
+"norew": "No reward: you must last {t} to win.",
+"padsounds": "Drum-pad hit sounds"
 }

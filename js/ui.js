@@ -2,15 +2,16 @@
 /* ===== UI : accueil par chapitres, fiche morceau, résultat, paramètres ===== */
 let SEL=null;
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
- cv.style.visibility=(id===null||id==='pause')?'visible':'hidden';bgRun(id!==null&&id!=='pause');updateNav()}
+ cv.style.visibility=(id===null||id==='pause')?'visible':'hidden';bgRun(id!==null&&id!=='pause');updateNav();
+ if(id==='home'){const f=document.querySelector('#home .card.cur');if(f)f.scrollIntoView({block:'center'})}}
 const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
 const mmss=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const levelLabel=l=>{const x=LEVELS.find(v=>v.level===l);return x?x[lang]:''};
-const chapterName=l=>CFG.chapterNames[l-1]||('LEVEL '+l);
+const chapterName=n=>{const c=((store&&store.manifest&&store.manifest.chapters)||[])[n-1];return c?c.name:('CH '+n)};
 const rec0=id=>S.jieebeat.songs[id]||{best:0,stars:0,bestCombo:0,plays:0,clears:0};
-function chapterList(){const m=new Map();SONGS.forEach(s=>{if(!m.has(s.level))m.set(s.level,[]);m.get(s.level).push(s)});
+function chapterList(){const m=new Map();SONGS.forEach(s=>{const n=s.chapter||1;if(!m.has(n))m.set(n,[]);m.get(n).push(s)});/* level = numéro de chapitre */
  return [...m.keys()].sort((a,b)=>a-b).map(l=>({level:l,songs:m.get(l)}))}
-const chapterStars=l=>SONGS.filter(s=>s.level===l).reduce((a,s)=>a+rec0(s.id).stars,0);
+const chapterStars=l=>SONGS.filter(s=>(s.chapter||1)===l).reduce((a,s)=>a+rec0(s.id).stars,0);
 function chapterOpen(l){return DEV||l<=1||(chapterOpen(l-1)&&chapterStars(l-1)>=CFG.chapterUnlockStars)}
 const coverHTML=(s,big)=>s.cover?`<img class="cover${big?' big':''}" loading="lazy" alt="" src="${s.cover}" style="--c:${s.color}">`:`<div class="cover${big?' big':''}" style="--c:${s.color}"><i></i><i></i><i></i><i></i></div>`;
 
@@ -26,7 +27,7 @@ function renderSong(){
  const s=SONGS.find(x=>x.id===SEL),el=document.getElementById('sub');if(!s){history.back();return}
  const rec=rec0(s.id);let mode='normal';
  el.innerHTML=`<div style="text-align:center">${coverHTML(s,true)}<h2 style="margin:16px 0 4px">${s.title}</h2><div class="sub" style="margin-bottom:6px">${s.artist||''}</div>
-  <div class="sub">${chapterName(s.level)} · ${levelLabel(s.level)} · ${Math.round(s.bpm)} ${T('bpm')} · ${mmss(s.duration)}</div>
+  <div class="sub">${chapterName(s.chapter||1)} · ${levelLabel(s.level)} · ${Math.round(s.bpm)} ${T('bpm')} · ${mmss(s.duration)}</div>
   <div class="stars" style="font-size:26px">${stars(rec.stars)}</div><div class="sub">${T(CFG.mastery[Math.max(0,rec.stars-1)])}</div>
   <div class="sub" style="color:#ffd166">${T('objective',{t:mmss(Math.round(Math.min(CFG.goalSec,s.duration-1)))})}</div></div>
   <div class="grid"><div class="stat"><span>${T('best')}</span><b>${rec.best}</b></div><div class="stat"><span>${T('combo')}</span><b>${rec.bestCombo}</b></div></div>
@@ -41,11 +42,13 @@ function renderHome(){
  const el=document.getElementById('home'),sk=S.jieebeat.streak,last=SONGS.find(s=>s.id===S.jieebeat.lastSong)||SONGS[0];
  let h=`<div class="row"><h1>JIEEBEAT</h1><button id="hq" aria-label="${T('how')}">?</button></div><div class="sub">🔥 ${sk.count} ${T('streak')} · ◆ ${S.core.currency.jieeCoins} ${T('coins')}</div>`;
  if(last)h+=`<button class="p hero" data-open="${last.id}" data-play="1">▶ ${T('resume')} · ${last.title}</button>`;
+ let lockShown=false;
  chapterList().forEach(c=>{
-  h+=`<div class="chap"><b>${T('chapter')} ${String(c.level).padStart(2,'0')} — ${chapterName(c.level)}</b><small>${levelLabel(c.level)} · ${chapterStars(c.level)}/${c.songs.length*5} ★</small></div>`;
-  if(!chapterOpen(c.level)){h+=`<div class="card lock"><div>🔒 ${T('chaplock',{n:CFG.chapterUnlockStars,c:c.level-1})}</div></div>`;return}
+  const open=chapterOpen(c.level),need=CFG.chapterUnlockStars;
+  h+=`<div class="chap${open?'':' dim'}"><b>${open?'':'🔒 '}${T('chapter')} ${String(c.level).padStart(2,'0')} — ${chapterName(c.level)}</b><small>${open?'★ '+Math.min(chapterStars(c.level),need)+'/'+need:''}</small></div>`;
+  if(!open){if(!lockShown){lockShown=true;h+=`<div class="card lock"><div>${T('chaplock',{n:need,c:c.level-1})}</div></div>`}return}
   c.songs.forEach(s=>{const r=rec0(s.id);
-   h+=`<div class="card" data-open="${s.id}">${coverHTML(s)}<div class="sp"><b>${s.title}</b><small>${s.artist||'—'} · ${mmss(s.duration)}</small><small><span class="stars">${stars(r.stars)}</span>${r.best?' · '+r.best:''}</small></div><span style="color:var(--dim);font-size:22px">›</span></div>`});
+   h+=`<div class="card${last&&s.id===last.id?' cur':''}" data-open="${s.id}">${coverHTML(s)}<div class="sp"><b>${s.title}</b><small>${s.artist||'—'} · ${mmss(s.duration)} · ${levelLabel(s.level)}</small><small><span class="stars">${stars(r.stars)}</span>${r.best?' · '+r.best:''}</small></div><span style="color:var(--dim);font-size:22px">›</span></div>`});
  });
  el.innerHTML=h;
  document.getElementById('hq').onclick=()=>{push('how');renderHow()};
@@ -59,24 +62,25 @@ function starsOf(r,completed,reach,acc){
  if(won&&acc>=R.acc4&&(completed||reach>=G+R.bonus4))return 4;
  if(won&&acc>=R.acc3)return 3;
  if(won)return 2;
- return reach>=Math.min(R.minSec,G/3)?1:0;
+ return 0;/* perdu avant l'objectif : rien */
 }
 function settle(r,completed){/* calcule et enregistre le résultat une seule fois (fin de partie, abandon ou pause après victoire) */
  if(r.sum)return r.sum;
  const ranked=r.mode.ranked!==false,ab=r.song.chart.audioStart||0,total=r.counts.PERFECT+r.counts.GREAT+r.counts.GOOD,acc=r.judged?r.acc/r.judged:0;
- const reach=completed?r.song.chart.length-ab:Math.max(0,(r.failT!==undefined?r.failT:Aud.songTime())-ab);
+ const reach=completed?r.song.chart.length:Math.max(0,r.failT!==undefined?r.failT:Aud.songTime());
  if(completed)r.won=true;
  const stars_=starsOf(r,completed,reach,acc),won=!!r.won;
- const openBefore=[1,2,3,4,5].map(chapterOpen),rec=rec0(r.song.id),oldStars=rec.stars;
+ const CHN=chapterList().map(c=>c.level),openBefore=CHN.map(chapterOpen),rec=rec0(r.song.id),oldStars=rec.stars;
  const sum={ranked,acc,reach,won,completed,stars:stars_,newRec:false,newUnlock:null,ach:[],rec};
  r.settled=true;r.sum=sum;
  if(!ranked)return sum;
+ const st=S.jieebeat.stats;st.played++;st.notes+=total;st.bestCombo=Math.max(st.bestCombo,r.maxCombo);st.playMs+=Math.round(performance.now()-r.startedAt);
+ if(!won){Store.save();return sum}/* perdu avant l'objectif : aucune récompense, aucun record */
  sum.newRec=r.score>rec.best;
  rec.best=Math.max(rec.best,r.score);rec.bestCombo=Math.max(rec.bestCombo,r.maxCombo);rec.stars=Math.max(rec.stars,stars_);rec.plays++;if(won)rec.clears++;
  S.jieebeat.songs[r.song.id]=rec;
- const st=S.jieebeat.stats;st.played++;st.notes+=total;st.bestCombo=Math.max(st.bestCombo,r.maxCombo);st.playMs+=Math.round(performance.now()-r.startedAt);
  if(won){st.cleared++;S.core.currency.jieeCoins+=Math.max(0,stars_-oldStars)*CFG.coinsPerStar+5;
-  const nl=[2,3,4,5].find(l=>!openBefore[l-1]&&chapterOpen(l));if(nl)sum.newUnlock={title:chapterName(nl)}}
+  const nl=CHN.find((n,i)=>!openBefore[i]&&chapterOpen(n));if(nl)sum.newUnlock={title:chapterName(nl)}}
  const day=Store.today(),sk=S.jieebeat.streak;
  if(sk.lastDay!==day){const y=new Date();y.setDate(y.getDate()-1);sk.count=sk.lastDay===y.toLocaleDateString('sv')?sk.count+1:1;sk.lastDay=day}
  reportRun(r,won,acc);sum.ach=checkAchievements();Store.save();
@@ -94,16 +98,17 @@ function finish(r,completed){
   ${!m.won?`<div class="sub">${T('lefttowin',{n:left})}</div>`:''}
   <div class="sub">${T('reached')} ${mmss(Math.round(m.reach))}</div>
   <p class="big">${r.score}</p>${m.newRec?`<div style="color:#ffd166;font-weight:800">${T('newrec')}</div>`:''}
-  ${m.ranked?`<div class="stars" style="font-size:30px;margin:8px 0">${stars(m.stars)}</div>`:''}
+  ${m.ranked&&m.won?`<div class="stars" style="font-size:30px;margin:8px 0">${stars(m.stars)}</div>`:''}
+  ${m.ranked&&!m.won?`<div class="sub" style="color:var(--hot)">${T('norew',{t:mmss(Math.round(r.goalSec))})}</div>`:''}
   <div class="grid"><div class="stat"><span>${T('acc')}</span><b>${(m.acc*100).toFixed(1)}%</b></div>
   <div class="stat"><span>${T('combo')}</span><b>${r.maxCombo}</b></div>
-  ${m.ranked?`<div class="stat"><span>${T('best')}</span><b>${rec.best}</b></div><div class="stat"><span>${T(CFG.mastery[Math.max(0,rec.stars-1)])}</span><b>${rec.stars}/5 ★</b></div>`:''}</div>
+  ${m.ranked&&m.won?`<div class="stat"><span>${T('best')}</span><b>${rec.best}</b></div><div class="stat"><span>${T(CFG.mastery[Math.max(0,rec.stars-1)])}</span><b>${rec.stars}/5 ★</b></div>`:''}</div>
   ${m.newUnlock?`<div class="card" style="border-color:var(--b)"><b>${T('chapunlocked')}</b><span>${m.newUnlock.title}</span></div>`:''}
   ${m.ach.map(a=>`<div class="card" style="border-color:#ffd166"><b>🏆 ${T('achnew')}</b><span>${a[lang]}</span></div>`).join('')}
-  <div class="sp"></div><button class="p" id="rt">${T('retry')}</button><div style="height:10px"></div><button id="mn">${T('menu')}</button>`;
+  <div class="sp"></div><button class="p" id="ct">${m.won?T('continue'):T('retry')}</button><div style="height:10px"></div><button id="ot">${m.won?T('retry'):T('continue')}</button>`;
  show('result');history.replaceState({s:'result'},'');CUR='result';
- document.getElementById('rt').onclick=()=>startSong(r.song,r.modeName);
- document.getElementById('mn').onclick=()=>history.back();
+ const again=()=>startSong(r.song,r.modeName),toHome=()=>history.go(-2);/* retour direct à l'accueil, liste des morceaux */
+ document.getElementById('ct').onclick=m.won?toHome:again;document.getElementById('ot').onclick=m.won?again:toHome;
 }
 function renderHow(){
  const el=document.getElementById('sub'),d=(c,dl)=>`<b><i class="t" style="background:${c};animation-delay:${dl}s"></i></b>`;
@@ -118,6 +123,7 @@ function renderSettings(){
  el.innerHTML=`<h2>${T('settings')}</h2>
   <label>${T('music')}<input type="range" min="0" max="1" step=".05" value="${t.music}" data-k="music"></label>
   <label>${T('sfx')}<input type="range" min="0" max="1" step=".05" value="${t.sfx}" data-k="sfx"></label>
+  <label>${T('padsounds')}<input type="checkbox" data-c="padSounds" ${t.padSounds?'checked':''}></label>
   <label>${T('offset')}<span><button data-o="-10">−</button> <b id="ov">${t.offsetMs}</b> <button data-o="10">+</button></span></label>
   <label>${T('calib')}<button id="cal">▶</button></label>
   <label>${T('how')}<button id="hw">?</button></label>
@@ -127,7 +133,8 @@ function renderSettings(){
   <label>${T('lang')}<span><button data-l="fr">FR</button> <button data-l="en">EN</button></span></label>
   <div class="sp"></div><button id="rs">${T('reset')}</button>`;
  el.querySelectorAll('input[type=range]').forEach(i=>i.oninput=()=>{S.tech[i.dataset.k]=+i.value;Store.save()});
- el.querySelectorAll('input[type=checkbox]').forEach(i=>i.onchange=()=>{S.tech[i.dataset.c]=i.checked;Store.save()});
+ el.querySelectorAll('input[type=checkbox]').forEach(i=>i.onchange=()=>{S.tech[i.dataset.c]=i.checked;Store.save();
+  if(i.dataset.c==='padSounds'&&Aud.ensure()){if(!Aud.sfx)Aud.init();[0,1,2,3].forEach((l,k)=>setTimeout(()=>Aud.hit(l,'PERFECT',k,0),k*170))}});/* petit aperçu du son choisi */
  el.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{S.tech.offsetMs=Math.max(-300,Math.min(300,S.tech.offsetMs+ +b.dataset.o));document.getElementById('ov').textContent=S.tech.offsetMs;Store.save()});
  el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{lang=b.dataset.l;S.core.language=lang;Store.save();renderSettings();updateNav()});
  document.getElementById('dl').onclick=e=>{const b=e.currentTarget;b.disabled=true;store.downloadAll((n,m)=>{b.textContent=n+'/'+m}).then(()=>{b.textContent='✓'})};

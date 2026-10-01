@@ -7,10 +7,10 @@ const CFG={
  points:{PERFECT:300,GREAT:200,GOOD:100}, accWeight:{PERFECT:1,GREAT:.8,GOOD:.5},
  multiplierEvery:10, multiplierMax:4, feverCombo:40,
  holdReleaseTolerance:.25,
- goalSec:90, speedEnd:[1.6,1.75,1.9,2.05,2.2],
+ goalSec:90, speedRef:39, speedStart:17, speedLast:28, rampStart:1.5, rampLast:2.1,/* chute: 39/vitesse = secondes ; la vitesse monte de morceau en morceau */
  starRules:{minSec:30,acc3:.75,acc4:.88,bonus4:45,acc5:.92}, mastery:['discover','initiate','confirmed','expert','master'],
  modes:{normal:{failOnMiss:true,rate:1},practice:{failOnMiss:false,rate:.75,ranked:false}},
- chapterUnlockStars:4, chapterNames:['AWAKENING','PULSE','RUSH','AFTER DARK','JIEE'],
+ chapterUnlockStars:5,
  coinsPerStar:10,
  storeKey:'jieebeat.save', schemaVersion:2
 };
