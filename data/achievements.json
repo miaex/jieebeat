@@ -154,5 +154,137 @@
    "fr": "Termine tous les morceaux d un chapitre",
    "en": "Clear every song of a chapter"
   }
+ },
+ {
+  "id": "tier1",
+  "type": "tierDone",
+  "target": 1,
+  "coins": 150,
+  "fr": "Débutant maîtrisé",
+  "en": "Beginner mastered",
+  "d": {
+   "fr": "Gagne tous les morceaux du niveau Débutant",
+   "en": "Win every song on Beginner"
+  }
+ },
+ {
+  "id": "tier2",
+  "type": "tierDone",
+  "target": 2,
+  "coins": 250,
+  "fr": "Confirmé maîtrisé",
+  "en": "Advanced mastered",
+  "d": {
+   "fr": "Gagne tous les morceaux du niveau Confirmé",
+   "en": "Win every song on Advanced"
+  }
+ },
+ {
+  "id": "tier3",
+  "type": "tierDone",
+  "target": 3,
+  "coins": 400,
+  "fr": "Expert maîtrisé",
+  "en": "Expert mastered",
+  "d": {
+   "fr": "Gagne tous les morceaux du niveau Expert",
+   "en": "Win every song on Expert"
+  }
+ },
+ {
+  "id": "tier4",
+  "type": "tierDone",
+  "target": 4,
+  "coins": 600,
+  "fr": "Maître maîtrisé",
+  "en": "Master mastered",
+  "d": {
+   "fr": "Gagne tous les morceaux du niveau Maître",
+   "en": "Win every song on Master"
+  }
+ },
+ {
+  "id": "tier5",
+  "type": "tierDone",
+  "target": 5,
+  "coins": 1000,
+  "fr": "Légende",
+  "en": "Legend",
+  "d": {
+   "fr": "Gagne tous les morceaux du niveau Légende",
+   "en": "Win every song on Legend"
+  }
+ },
+ {
+  "id": "mod1",
+  "type": "modWins",
+  "target": 1,
+  "coins": 40,
+  "fr": "Pimenter le jeu",
+  "en": "Spice it up",
+  "d": {
+   "fr": "Gagne un morceau avec une variante",
+   "en": "Win a song with a variant"
+  }
+ },
+ {
+  "id": "mod10",
+  "type": "modWins",
+  "target": 10,
+  "coins": 120,
+  "fr": "Joueur à variantes",
+  "en": "Variant player",
+  "d": {
+   "fr": "Gagne 10 morceaux avec une variante",
+   "en": "Win 10 songs with a variant"
+  }
+ },
+ {
+  "id": "hold50",
+  "type": "holds",
+  "target": 50,
+  "coins": 40,
+  "fr": "Doigts de fer",
+  "en": "Iron fingers",
+  "d": {
+   "fr": "Réussis 50 appuis prolongés",
+   "en": "Complete 50 holds"
+  }
+ },
+ {
+  "id": "hold500",
+  "type": "holds",
+  "target": 500,
+  "coins": 150,
+  "fr": "Appuis infinis",
+  "en": "Endless holds",
+  "d": {
+   "fr": "Réussis 500 appuis prolongés",
+   "en": "Complete 500 holds"
+  }
+ },
+ {
+  "id": "perfect500",
+  "type": "perfects",
+  "target": 500,
+  "coins": 50,
+  "fr": "Précision chirurgicale",
+  "en": "Surgical precision",
+  "d": {
+   "fr": "Fais 500 PERFECT",
+   "en": "Hit 500 PERFECT"
+  }
+ },
+ {
+  "id": "perfect5k",
+  "type": "perfects",
+  "target": 5000,
+  "coins": 200,
+  "fr": "Métronome humain",
+  "en": "Human metronome",
+  "d": {
+   "fr": "Fais 5000 PERFECT",
+   "en": "Hit 5000 PERFECT"
+  }
  }
 ]

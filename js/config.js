@@ -10,7 +10,7 @@ const CFG={
  goalSec:90, speedRef:39, speedStart:22, speedLast:36, rampStart:1.7, rampLast:2.3, minApproach:.62,/* chute: 39/vitesse = secondes ; la vitesse monte de morceau en morceau */
  starRules:{minSec:30,acc3:.75,acc4:.88,bonus4:45,acc5:.92}, mastery:['discover','initiate','confirmed','expert','master'],
  modes:{normal:{failOnMiss:true,rate:1},practice:{failOnMiss:false,rate:.75,ranked:false}},
- chapterUnlockStars:5,
+ chapterUnlockStars:5, mods:{turbo:{approach:.87,score:1.15}}, modCoinBonus:.25,
  coinsPerStar:10,
- storeKey:'jieebeat.save', schemaVersion:2
+ storeKey:'jieebeat.save', schemaVersion:3
 };

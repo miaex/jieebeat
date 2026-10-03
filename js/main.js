@@ -9,8 +9,10 @@ let lastErr=0;/* pas d'erreur JS brute pour le joueur */
 addEventListener('error',()=>{if(Date.now()-lastErr>5000){lastErr=Date.now();toast(T('oops'))}});
 initNav();
 Promise.all([loadI18n(),loadSongs(),loadChallenges(),loadCollection(),loadAchievements()]).then(()=>{
+ TIER=Math.min(S.tech.tier||1,TIERS.length);if(!tierOpen(TIER))TIER=1;
  renderHome();show('home');
  store.prefetchIdle(SONGS.slice(0,5).map(s=>s.id),SONGS.slice(0,12).map(s=>s.id));/* têtes des 12 premiers morceaux + audio des 5 premiers, en arrière-plan */
+ (window.requestIdleCallback||setTimeout)(()=>store.purgeBad().then(n=>{if(n)toast(T('repaired',{n}))}),3000);/* nettoie d'éventuels fichiers audio corrompus en cache */
  if(!S.tech.seenHow){S.tech.seenHow=true;Store.save();push('how');renderHow()}/* premier lancement : Comment jouer */
 });
 /* Contrat avec le futur hub JIEE PLAY : le hub peut injecter le profil et être prévenu à chaque sauvegarde */

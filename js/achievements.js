@@ -7,7 +7,8 @@ function chaptersDone(){return chapterList().filter(c=>c.songs.every(s=>((S.jiee
 function checkAchievements(){
  const st=S.jieebeat.stats,got=[];
  const val={cleared:st.cleared,notes:st.notes,combo:st.bestCombo,streak:S.jieebeat.streak.count,totalStars:totalStars(),chapters:chaptersDone(),
-  stars5:Object.values(S.jieebeat.songs).filter(r=>r.stars>=5).length};
+  stars5:Object.values(S.jieebeat.songs).filter(r=>r.stars>=5).length,
+  tierDone:[1,2,3,4,5].filter(t=>tierDone(t)).pop()||0,modWins:st.modWins||0,holds:st.holds||0,perfects:st.perfects||0};
  for(const a of ACH){if(S.core.achievements.includes(a.id))continue;
   if((val[a.type]||0)>=a.target){S.core.achievements.push(a.id);S.core.currency.jieeCoins+=a.coins||0;got.push(a)}}
  return got;

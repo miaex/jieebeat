@@ -12,6 +12,10 @@
 //   store.playPreview(songId);                         // extrait de 12 s (après un geste utilisateur)
 
 const CACHE_NAME = 'jieebeat-songs-v1';
+// Un fichier audio MP4/M4A commence par « ftyp » ; un JSON par { ou [. Tout le reste (page HTML de secours, fichier tronqué)
+// est refusé et jamais gardé en cache : c'est ce qui rendait certains morceaux muets ou bloqués.
+const _ftyp = b => !!b && b.byteLength > 12 && String.fromCharCode(...new Uint8Array(b, 4, 4)) === 'ftyp';
+const _json = b => { if (!b || b.byteLength < 2) return false; const c = new Uint8Array(b, 0, 1)[0]; return c === 123 || c === 91; };
 
 class SongStore {
   constructor({ base = './', audioContext = null } = {}) {
@@ -30,17 +34,24 @@ class SongStore {
 
   async _fetchBytes(url) {
     if (this._bytes.has(url)) return this._bytes.get(url);
+    const ok = url.endsWith('.m4a') ? _ftyp : url.endsWith('.json') ? _json : null;
     const p = (async () => {
       let cache = null;
       try { cache = await caches.open(CACHE_NAME); } catch (_) { /* navigation privée, etc. */ }
       if (cache) {
         const hit = await cache.match(url);
-        if (hit) return hit.arrayBuffer();
+        if (hit) { const b = await hit.arrayBuffer(); if (!ok || ok(b)) return b; try { await cache.delete(url); } catch (_) {} }
       }
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + url);
-      if (cache) { try { await cache.put(url, res.clone()); } catch (_) {} }
-      return res.arrayBuffer();
+      for (let k = 0; k < 2; k++) {            // 2 essais : le 2e ignore tout cache HTTP
+        let res;
+        try { res = await fetch(url, k ? { cache: 'reload' } : undefined); } catch (e) { if (k) throw e; continue; }
+        if (!res.ok) { if (k) throw new Error('HTTP ' + res.status + ' ' + url); continue; }
+        const b = await res.clone().arrayBuffer();
+        if (ok && !ok(b)) continue;
+        if (cache) { try { await cache.put(url, res); } catch (_) {} }
+        return b;
+      }
+      throw new Error('Fichier invalide : ' + url);
     })();
     this._bytes.set(url, p);
     p.catch(() => this._bytes.delete(url));
@@ -65,6 +76,18 @@ class SongStore {
       this._charts.set(id, this._fetchBytes(this.base + s.chart).then(b => JSON.parse(new TextDecoder().decode(b))));
     }
     return this._charts.get(id);
+  }
+
+  // Chart d'un niveau de difficulté (1 = chart.json, 2..5 = chart.N.json)
+  chartTier(id, t) {
+    if (!t || t < 2) return this.chart(id);
+    const k = id + '#' + t;
+    if (!this._charts.has(k)) {
+      const s = this.byId.get(id);
+      this._charts.set(k, this._fetchBytes(this.base + s.chart.replace(/chart\.json$/, 'chart.' + t + '.json')).then(b => JSON.parse(new TextDecoder().decode(b))));
+      this._charts.get(k).catch(() => this._charts.delete(k));
+    }
+    return this._charts.get(k);
   }
 
   // Décodage : à appeler idéalement APRÈS un geste utilisateur (AudioContext démarré).
@@ -139,7 +162,47 @@ class SongStore {
   // puis l'audio complet du niveau courant. Un seul téléchargement à la fois pour ne pas gêner le jeu.
   // Met une URL dans le Cache Storage sans garder les octets en RAM.
   async warm(url) {
-    try { const c = await caches.open(CACHE_NAME); if (await c.match(url)) return; const r = await fetch(url); if (r.ok) await c.put(url, r); } catch (_) {}
+    try {
+      const c = await caches.open(CACHE_NAME), isA = url.endsWith('.m4a');
+      const hit = await c.match(url);
+      if (hit) { const b = await (await hit.blob()).slice(0, 12).arrayBuffer(); if (!isA || _ftyp(b)) return; await c.delete(url); }
+      const r = await fetch(url);
+      if (!r.ok || /text\/html/.test(r.headers.get('content-type') || '')) return;
+      await c.put(url, r);
+      if (isA) { const h2 = await c.match(url); const b2 = await (await h2.blob()).slice(0, 12).arrayBuffer(); if (!_ftyp(b2)) await c.delete(url); }
+    } catch (_) {}
+  }
+  // Supprime du cache les entrées invalides (anciennes pages HTML enregistrées à la place d'un audio).
+  async purgeBad() {
+    let n = 0;
+    try {
+      const c = await caches.open(CACHE_NAME);
+      for (const rq of await c.keys()) {
+        const u = rq.url, a = u.endsWith('.m4a'), j = u.endsWith('.json');
+        if (!a && !j) continue;
+        const r = await c.match(rq); if (!r) continue;
+        const b = await (await r.blob()).slice(0, 12).arrayBuffer();
+        if (a ? !_ftyp(b) : !_json(b)) { await c.delete(rq); n++; }
+      }
+    } catch (_) {}
+    return n;
+  }
+  // Vérifie sur le serveur que chaque fichier audio existe et a la bonne taille. Renvoie les ids en défaut.
+  async audit(cb) {
+    const bad = [], all = this.manifest.songs; let n = 0;
+    for (const s of all) {
+      let ok = true;
+      for (const [u, size] of [[s.audio, s.bytes]].concat(s.head ? [[s.head, 0]] : [])) {
+        try {
+          const r = await fetch(this.base + u, { method: 'HEAD', cache: 'no-store' });
+          if (!r.ok) ok = false;
+          else if (size) { const L = +r.headers.get('content-length'); if (L && Math.abs(L - size) > 4096) ok = false; }
+        } catch (_) { ok = false; }
+      }
+      if (!ok) bad.push(s.id);
+      if (cb) cb(++n, all.length, bad);
+    }
+    return bad;
   }
   // Préchargement discret (covers/previews sont déjà précachés par le service worker) : audio des morceaux demandés.
   prefetchIdle(audioIds = [], headIds = []) {
